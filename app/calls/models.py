@@ -3,8 +3,9 @@ process and there is nothing here that needs a query language.
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
+from typing import Any
 
 from app.ivr.states import CallState
 
@@ -15,7 +16,7 @@ class Locale(StrEnum):
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 @dataclass
@@ -30,10 +31,10 @@ class DTMFEntry:
 class CallEvent:
     type: str
     call_uuid: str
-    payload: dict
+    payload: dict[str, Any]
     at: datetime = field(default_factory=utcnow)
 
-    def to_json(self) -> dict:
+    def to_json(self) -> dict[str, Any]:
         return {
             "type": self.type,
             "call_uuid": self.call_uuid,

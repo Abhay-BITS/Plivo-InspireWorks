@@ -8,6 +8,8 @@ what the caller actually heard. Every re-prompt in this system passes
 through the state machine and is visible in the timeline because of this.
 """
 
+from plivo import plivoxml
+
 from app.calls.models import Locale
 from app.ivr.machine import PromptId, PromptIntent
 from app.telephony import prompts
@@ -27,8 +29,6 @@ def _menu_document(
     num_digits: int,
 ) -> str:
     """speak_lines is a list of (text, language, voice) spoken inside GetDigits."""
-    from plivo import plivoxml
-
     response = plivoxml.ResponseElement()
     get_digits = plivoxml.GetDigitsElement(
         action=action_url,
@@ -42,7 +42,7 @@ def _menu_document(
         get_digits.add_speak(text, voice=voice, language=language)
     response.add(get_digits)
     response.add_redirect(timeout_url)
-    return response.to_string(False)
+    return str(response.to_string(False))
 
 
 def otp_document(attempt: int, urls: CallbackUrls) -> str:
@@ -80,12 +80,10 @@ def action_menu_document(locale: Locale, urls: CallbackUrls, retry: bool = False
 
 
 def play_audio_document(locale: Locale, audio_url: str, urls: CallbackUrls) -> str:
-    from plivo import plivoxml
-
     response = plivoxml.ResponseElement()
     response.add_play(audio_url)
     response.add_redirect(urls.action_menu)
-    return response.to_string(False)
+    return str(response.to_string(False))
 
 
 def transfer_document(
@@ -94,8 +92,6 @@ def transfer_document(
     caller_id: str,
     urls: CallbackUrls,
 ) -> str:
-    from plivo import plivoxml
-
     language, voice = VOICE_BY_LOCALE[locale]
     response = plivoxml.ResponseElement()
     response.add_speak(prompts.transfer_line(locale), voice=voice, language=language)
@@ -110,20 +106,25 @@ def transfer_document(
     response.add(dial)
     response.add_speak(prompts.transfer_failed_line(locale), voice=voice, language=language)
     response.add_redirect(urls.action_menu)
-    return response.to_string(False)
+    return str(response.to_string(False))
 
 
 def error_document() -> str:
-    from plivo import plivoxml
-
     language, voice = VOICE_BY_LOCALE[Locale.EN]
     response = plivoxml.ResponseElement()
     response.add_speak(prompts.goodbye_line(), voice=voice, language=language)
     response.add_hangup()
-    return response.to_string(False)
+    return str(response.to_string(False))
 
 
-def render(intent: PromptIntent, urls: CallbackUrls, *, audio_url: str, associate_number: str, caller_id: str) -> str:
+def render(
+    intent: PromptIntent,
+    urls: CallbackUrls,
+    *,
+    audio_url: str,
+    associate_number: str,
+    caller_id: str,
+) -> str:
     """Single entry point handlers.py calls to turn a PromptIntent into XML."""
     if intent.prompt_id in (PromptId.OTP_PROMPT, PromptId.OTP_RETRY):
         return otp_document(intent.attempt, urls)

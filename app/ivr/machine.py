@@ -106,9 +106,10 @@ def _advance_otp(session: CallSession, event: InputEvent) -> Transition:
         )
 
     session.otp_attempts += 1
+    reason = "wrong code" if event.kind == InputKind.DIGITS else "unexpected event at code prompt"
     return Transition(
         next_state=CallState.AWAITING_OTP,
-        reason="wrong code" if event.kind == InputKind.DIGITS else "unexpected event at code prompt",
+        reason=reason,
         prompt=_otp_prompt(session.otp_attempts),
     )
 
@@ -145,6 +146,13 @@ def _advance_language(session: CallSession, event: InputEvent) -> Transition:
 
 def _advance_action_menu(session: CallSession, event: InputEvent) -> Transition:
     locale = session.locale
+
+    if event.kind == InputKind.ACTION_DONE:
+        return Transition(
+            next_state=CallState.ACTION_MENU,
+            reason="returned to action menu",
+            prompt=PromptIntent(prompt_id=PromptId.ACTION_MENU, locale=locale),
+        )
 
     if event.kind == InputKind.NO_INPUT:
         return Transition(
