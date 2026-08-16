@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plivo IVR Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <h1>Plivo IVR Console</h1>
+        <div class="api-status">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-label">connecting</span>
+        </div>
+      </header>
+
+      <main class="app-grid">
+        <section class="panel panel-place-call">
+          <h2 class="panel-title">Place a call</h2>
+          <form id="place-call-form">
+            <label class="field-label" for="to-input">To</label>
+            <input
+              id="to-input"
+              class="text-input"
+              type="tel"
+              name="to"
+              placeholder="+919876543210"
+            />
+            <label class="field-label">From</label>
+            <div class="static-value mono" id="from-value">+918035454161</div>
+            <button class="btn-primary" type="submit">Place call</button>
+            <p class="form-message" id="form-message"></p>
+          </form>
+
+          <h2 class="panel-title panel-title-spaced">Active calls</h2>
+          <ul class="call-list" id="call-list"></ul>
+
+          <div class="reference-card">
+            <div class="reference-row">
+              <span class="reference-label">Associate</span>
+              <span class="mono">02264236412</span>
+            </div>
+            <div class="reference-row" id="demo-code-row" hidden>
+              <span class="reference-label">Code</span>
+              <span class="mono" id="demo-code">0407</span>
+              <span class="reference-tag">demo</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel panel-flow">
+          <h2 class="panel-title">Call flow</h2>
+          <div id="state-graph" class="state-graph"></div>
+
+          <h2 class="panel-title panel-title-spaced">Event timeline</h2>
+          <ul class="timeline" id="timeline">
+            <li class="timeline-empty">No calls yet. Place one to see the flow.</li>
+          </ul>
+        </section>
+
+        <section class="panel panel-xml">
+          <h2 class="panel-title" id="xml-title">XML served</h2>
+          <pre class="xml-inspector mono" id="xml-inspector">No XML served yet.</pre>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
